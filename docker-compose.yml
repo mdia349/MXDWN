@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: mxdwn-db
+    ports:
+      - "5438:5432"
+    environment:
+      POSTGRES_DB: mxdwn
+      POSTGRES_USER: mxdwn_dev
+      POSTGRES_PASSWORD: mxdwnpass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
