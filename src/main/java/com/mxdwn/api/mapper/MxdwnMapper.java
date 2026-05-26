@@ -9,10 +9,15 @@ import com.mxdwn.api.dto.response.ProjectResponseDTO;
 import com.mxdwn.api.entity.Comment;
 import com.mxdwn.api.entity.Mix;
 import com.mxdwn.api.entity.Project;
+import com.mxdwn.api.service.S3Service;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class MxdwnMapper {
+
+    private final S3Service s3Service;
 
     // CONVERT TO DTO
     public ProjectResponseDTO toDto(Project project) {
@@ -35,7 +40,7 @@ public class MxdwnMapper {
                 .versionName(mix.getVersionName())
                 .durationMs(mix.getDurationMs())
                 .uploadedAt(mix.getUploadedAt())
-                // .streamUrl()
+                .streamUrl(s3Service.generateStreamUrl(mix.getS3ObjectKey()))
                 .build();
     }
 

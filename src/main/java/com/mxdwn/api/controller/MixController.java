@@ -6,10 +6,12 @@ import com.mxdwn.api.entity.Mix;
 import com.mxdwn.api.mapper.MxdwnMapper;
 import com.mxdwn.api.repository.MixRepository;
 import com.mxdwn.api.repository.ProjectRepository;
+import com.mxdwn.api.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +22,7 @@ public class MixController {
     private final MixRepository mixRepository;
     private final ProjectRepository projectRepository;
     private final MxdwnMapper mxdwnMapper;
+    private final S3Service s3Service;
 
     @GetMapping
     public List<MixResponseDTO> getMixesForProject(@PathVariable UUID projectId) {
@@ -27,6 +30,22 @@ public class MixController {
                 .map(mxdwnMapper::toDto)
                 .toList();
     }
+
+    @GetMapping("/upload-url")
+    public Map<String, String> getUploadUrl(
+            @PathVariable UUID projectId,
+            @RequestParam String filename,
+            @RequestParam String contentType) {
+        String objectKey = "projects/" + projectId.toString() + "/" + UUID.randomUUID() + "_" + filename;
+
+        String uploadUrl = s3Service.generateUploadUrl(objectKey, contentType);
+
+        return Map.of(
+                "uploadUrl", uploadUrl,
+                "s3ObjectKey", objectKey
+        );
+    }
+
 
     @PostMapping
     public MixResponseDTO createMix(@PathVariable UUID projectId, @RequestBody MixRequestDTO mixRequest) {

@@ -13,3 +13,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  aws:
+    s3:
+      bucket-name: mxdwn-bucket
+    region: us-east-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
