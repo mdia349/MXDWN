@@ -1,5 +1,6 @@
 package com.mxdwn.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,6 +23,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mix_id", nullable = false)
     @ToString.Exclude
+    @JsonIgnore
     private Mix mix;
 
     @Column(name = "user_id", nullable = false)
