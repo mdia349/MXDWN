@@ -8,6 +8,7 @@ import com.mxdwn.api.repository.MixRepository;
 import com.mxdwn.api.repository.ProjectRepository;
 import com.mxdwn.api.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,5 +56,14 @@ public class MixController {
             Mix savedMix = mixRepository.save(mixToSave);
             return mxdwnMapper.toDto(savedMix);
         }).orElseThrow(() -> new RuntimeException("Project not found with ID: " + projectId));
+    }
+
+    @DeleteMapping("/{mixId}")
+    public ResponseEntity<Void> deleteMix(@PathVariable UUID mixId) {
+        mixRepository.findById(mixId).ifPresent(mix -> {
+            s3Service.deleteFile(mix.getS3ObjectKey());
+            mixRepository.delete(mix);
+        });
+        return ResponseEntity.noContent().build();
     }
 }
