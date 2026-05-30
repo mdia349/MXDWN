@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -64,5 +62,24 @@ public class S3Service {
 
         s3Client.deleteObject(deleteObjectRequest);
         System.out.println("Deleted from S3: " + objectKey);
+    }
+
+    public void deleteFolder(String prefix) {
+        if (!prefix.endsWith("/")) {
+            prefix = prefix + "/";
+        }
+
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .build();
+
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+
+        for (S3Object s3Object : listResponse.contents()) {
+            deleteFile(s3Object.key());
+        }
+
+        System.out.println("Successfully wiped S3 directory: " + prefix);
     }
 }

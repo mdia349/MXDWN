@@ -41,7 +41,7 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable UUID projectId) {
         projectRepository.findById(projectId).ifPresent(project -> {
-            project.getMixes().forEach(mix -> s3Service.deleteFile(mix.getS3ObjectKey()));
+            s3Service.deleteFolder("projects/" + projectId.toString() + "/");
             projectRepository.delete(project);
         });
         return ResponseEntity.noContent().build();
