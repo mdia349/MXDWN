@@ -7,6 +7,7 @@ import com.mxdwn.api.mapper.MxdwnMapper;
 import com.mxdwn.api.repository.MixRepository;
 import com.mxdwn.api.repository.ProjectRepository;
 import com.mxdwn.api.service.S3Service;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,9 @@ public class MixController {
 
 
     @PostMapping
-    public MixResponseDTO createMix(@PathVariable UUID projectId, @RequestBody MixRequestDTO mixRequest) {
+    public MixResponseDTO createMix(
+            @PathVariable UUID projectId,
+            @Valid @RequestBody MixRequestDTO mixRequest) {
         return projectRepository.findById(projectId).map(project -> {
             Mix mixToSave = mxdwnMapper.toEntity(mixRequest);
             mixToSave.setProject(project);

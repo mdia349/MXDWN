@@ -7,6 +7,7 @@ import com.mxdwn.api.mapper.MxdwnMapper;
 import com.mxdwn.api.repository.ProjectRepository;
 import com.mxdwn.api.service.S3Service;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    ProjectResponseDTO createProject(@RequestBody ProjectRequestDTO projectRequest) {
+    public ProjectResponseDTO createProject(@Valid @RequestBody ProjectRequestDTO projectRequest) {
         Project projectToSave = mxdwnMapper.toEntity(projectRequest);
         Project savedProject = projectRepository.save(projectToSave);
         return mxdwnMapper.toDto(savedProject);

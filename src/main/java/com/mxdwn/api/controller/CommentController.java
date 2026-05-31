@@ -6,6 +6,7 @@ import com.mxdwn.api.entity.Comment;
 import com.mxdwn.api.mapper.MxdwnMapper;
 import com.mxdwn.api.repository.CommentRepository;
 import com.mxdwn.api.repository.MixRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class CommentController {
 
 
     @PostMapping
-    public CommentResponseDTO addComment(@PathVariable UUID mixId, @RequestBody CommentRequestDTO commentRequest) {
+    public CommentResponseDTO addComment(@PathVariable UUID mixId, @Valid @RequestBody CommentRequestDTO commentRequest) {
         return mixRepository.findById(mixId).map(mix -> {
             Comment commentToSave = mxdwnMapper.toEntity(commentRequest);
             commentToSave.setMix(mix);
