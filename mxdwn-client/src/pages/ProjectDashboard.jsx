@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchProjects, createProject } from '../api/projectApi';
+import { Link } from "react-router-dom";
 
 export default function ProjectDashboard() {
     // --- SOFT AUTH STATE ---
@@ -102,10 +103,17 @@ export default function ProjectDashboard() {
                     <p>No projects found for this artist.</p>
                 ) : (
                     projects.map(project => (
-                        <div key={project.id} style={{ border: '1px solid #444', padding: '15px', borderRadius: '8px', background: '#1a1a1a' }}>
-                            <h3 style={{ margin: '0 0 10px 0' }}>{project.title}</h3>
-                            <p style={{ margin: 0, color: '#aaa', fontSize: '14px' }}>Artist: {project.artistId}</p>
-                        </div>
+                        // 2. Wrap the card in a Link component
+                        <Link
+                            to={`/projects/${project.id}`}
+                            key={project.id}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <div style={{ border: '1px solid #444', padding: '15px', borderRadius: '8px', background: '#1a1a1a', cursor: 'pointer', transition: '0.2s' }}>
+                                <h3 style={{ margin: '0 0 10px 0' }}>{project.title}</h3>
+                                <p style={{ margin: 0, color: '#aaa', fontSize: '14px' }}>Artist: {project.artistId}</p>
+                            </div>
+                        </Link>
                     ))
                 )}
             </div>

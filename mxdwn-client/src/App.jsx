@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProjectDashboard from './pages/ProjectDashboard'; // Import the new component
+import ProjectDashboard from './pages/ProjectDashboard';
+import ProjectView from './pages/ProjectView'; // Add the import
 
 function App() {
     return (
@@ -13,7 +14,7 @@ function App() {
                 <main>
                     <Routes>
                         <Route path="/" element={<ProjectDashboard />} />
-                        <Route path="/projects/:projectId" element={<div>Audio Player coming soon...</div>} />
+                        <Route path="/projects/:projectId" element={<ProjectView />} /> {/* Update Route */}
                     </Routes>
                 </main>
             </div>
