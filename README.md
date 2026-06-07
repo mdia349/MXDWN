@@ -35,7 +35,7 @@ This project is structured as a **Monorepo**, housing both the client and server
     2. Frontend streams the raw audio binary directly to the AWS S3 bucket (bypassing the backend server to save bandwidth).
     3. Upon a 100% successful upload, metadata is securely committed to the PostgreSQL database, preventing "ghost records."
  
-
+## Current UI
 <img width="1128" height="931" alt="Screenshot 2026-06-07 at 2 24 32 PM" src="https://github.com/user-attachments/assets/f8847716-1240-4c42-890a-a823432695d3" />
 
 
