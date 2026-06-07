@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'; // 1. The Regions Plugin
 import { fetchProjectMixes } from '../api/projectApi';
-import { fetchMixComments, createComment } from '../api/commentApi'; // 2. Our new API calls
+import { fetchMixComments, createComment } from '../api/commentApi';
+import MixUploader from "../components/MixUploader.jsx"; // 2. Our new API calls
 
 export default function ProjectView() {
     const { projectId } = useParams();
@@ -133,12 +134,19 @@ export default function ProjectView() {
         }
     };
 
+    const handleUploadComplete = (newMix) => {
+        setMixes([newMix, ...mixes]);
+    }
+
     if (loading) return <div>Loading project data...</div>;
 
     return (
         <div>
             <Link to="/" style={{ color: '#00e5ff', textDecoration: 'none' }}>&larr; Back to Dashboard</Link>
             <h1 style={{ marginTop: '20px' }}>Mix Player</h1>
+
+            {/* 3. Drop the uploader right here */}
+            <MixUploader projectId={projectId} onUploadComplete={handleUploadComplete} />
 
             {mixes.length === 0 ? (
                 <p>No mixes uploaded to this project yet.</p>

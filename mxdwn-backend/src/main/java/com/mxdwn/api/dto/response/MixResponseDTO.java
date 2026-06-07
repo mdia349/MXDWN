@@ -12,5 +12,6 @@ public record MixResponseDTO(
         String versionName,
         Long durationMs,
         String streamUrl,
+        String uploadUrl,
         LocalDateTime uploadedAt
 ) {}
