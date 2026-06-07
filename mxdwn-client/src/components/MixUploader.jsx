@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createMix, uploadFileToS3 } from '../api/projectApi';
+import {createMix, fetchUploadUrl, uploadFileToS3} from '../api/projectApi';
 
 export default function MixUploader({ projectId, onUploadComplete }) {
     const [file, setFile] = useState(null);
@@ -38,23 +38,23 @@ export default function MixUploader({ projectId, onUploadComplete }) {
             const durationMs = await getAudioDuration(file);
             const fileFormat = file.type || 'audio/wav';
 
-            // Generate a unique S3 key so files don't overwrite each other
-            const s3ObjectKey = `projects/${projectId}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+            setStatus('fetching-url');
+            const { uploadUrl, s3ObjectKey } = await fetchUploadUrl(projectId, file.name, fileFormat);
 
-            // 2. Create the Mix record in Spring Boot
-            const newMix = await createMix(projectId, {
+            setStatus('uploading');
+            await uploadFileToS3(uploadUrl, file, (percent) => {
+                setProgress(percent);
+            });
+
+            setStatus('saving');
+            const finalizedMix = await createMix(projectId, {
                 versionName,
                 fileFormat,
                 durationMs,
                 s3ObjectKey
             });
 
-            // 3. Upload the binary directly to S3 using the URL Spring Boot gave us
-            setStatus('uploading');
-            // Assuming your MixResponseDTO has a field named 'uploadUrl' or similar holding the presigned URL
-            await uploadFileToS3(newMix.uploadUrl, file, (percent) => {
-                setProgress(percent);
-            });
+
 
             // 4. Success!
             setStatus('success');
@@ -63,7 +63,7 @@ export default function MixUploader({ projectId, onUploadComplete }) {
             setProgress(0);
 
             // Tell the parent component to refresh the mix list
-            if (onUploadComplete) onUploadComplete(newMix);
+            if (onUploadComplete) onUploadComplete(finalizedMix);
 
             // Reset status after a few seconds
             setTimeout(() => setStatus('idle'), 3000);
@@ -75,6 +75,8 @@ export default function MixUploader({ projectId, onUploadComplete }) {
         }
     };
 
+    const isWorking = ['processing', 'fetching-url', 'uploading', 'saving'].includes(status);
+
     return (
         <div style={{ background: '#222', padding: '20px', borderRadius: '8px', border: '1px solid #444', marginBottom: '30px' }}>
             <h3 style={{ margin: '0 0 15px 0' }}>Upload New Mix</h3>
@@ -85,7 +87,7 @@ export default function MixUploader({ projectId, onUploadComplete }) {
                     placeholder="Version Name (e.g. Mix 3 - Bass Up)"
                     value={versionName}
                     onChange={(e) => setVersionName(e.target.value)}
-                    disabled={status === 'uploading' || status === 'processing'}
+                    disabled={isWorking}
                     style={{ padding: '10px', background: '#1a1a1a', color: 'white', border: '1px solid #333', borderRadius: '4px' }}
                     required
                 />
@@ -94,7 +96,7 @@ export default function MixUploader({ projectId, onUploadComplete }) {
                     type="file"
                     accept="audio/wav, audio/mpeg"
                     onChange={handleFileChange}
-                    disabled={status === 'uploading' || status === 'processing'}
+                    disabled={isWorking}
                     style={{ color: '#ccc' }}
                     required
                 />
@@ -107,7 +109,7 @@ export default function MixUploader({ projectId, onUploadComplete }) {
 
                 <button
                     type="submit"
-                    disabled={status === 'uploading' || status === 'processing' || !file}
+                    disabled={isWorking || !file}
                     style={{
                         padding: '12px',
                         background: status === 'success' ? '#4CAF50' : '#00e5ff',
@@ -115,12 +117,16 @@ export default function MixUploader({ projectId, onUploadComplete }) {
                         border: 'none',
                         borderRadius: '4px',
                         fontWeight: 'bold',
-                        cursor: status === 'uploading' ? 'not-allowed' : 'pointer'
+                        cursor: isWorking ? 'not-allowed' : 'pointer'
                     }}
                 >
-                    {status === 'processing' ? 'Preparing...' :
-                        status === 'uploading' ? `Uploading... ${progress}%` :
-                            status === 'success' ? 'Upload Complete!' : 'Upload to S3'}
+                    {status === 'processing' && 'Calculating audio duration...'}
+                    {status === 'fetching-url' && 'Securing S3 permission...'}
+                    {status === 'uploading' && `Uploading track... ${progress}%`}
+                    {status === 'saving' && 'Registering mix with database...'}
+                    {status === 'success' && 'Mix online!'}
+                    {status === 'idle' && 'Upload Mix'}
+                    {status === 'error' && 'Retry Upload'}
                 </button>
             </form>
         </div>

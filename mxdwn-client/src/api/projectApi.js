@@ -22,6 +22,16 @@ export const createMix = async (projectId, mixData) => {
     return response.data;
 };
 
+export const fetchUploadUrl = async (projectId, filename, contentType) => {
+    const response = await apiClient.get(`/projects/${projectId}/mixes/upload-url`, {
+        params: {
+            filename: filename,
+            contentType: contentType
+        }
+    });
+    return response.data;
+}
+
 export const uploadFileToS3 = async (uploadUrl, file, onProgress) => {
     await axios.put(uploadUrl, file, {
         headers: {
