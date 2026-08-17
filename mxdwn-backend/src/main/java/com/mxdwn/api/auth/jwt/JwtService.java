@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value("${spring.security.jwt.secret-key")
+    @Value("${spring.security.jwt.secret-key}")
     private String secretKey;
 
     public String extractUsername(String token) {
@@ -60,7 +60,7 @@ public class JwtService {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
