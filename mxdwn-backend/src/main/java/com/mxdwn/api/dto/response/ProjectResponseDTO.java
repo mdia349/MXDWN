@@ -9,6 +9,6 @@ import java.util.UUID;
 public record ProjectResponseDTO(
         UUID id,
         String title,
-        String artistId,
+        UUID ownerId,
         LocalDateTime createdAt
 ) {}

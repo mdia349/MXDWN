@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
-    List<Project> findAllByArtistId(String artistId);
+    List<Project> findAllByOwner_Id(UUID ownerId);
 }

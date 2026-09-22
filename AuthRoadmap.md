@@ -12,11 +12,12 @@
 - Stateless security configuration.
 - All normal API routes require authentication.
 
-### 3. Associate projects with owners ← next
+### 3. Associate projects with owners
++[x] DONE
 - Replace Project.artistId with Project.owner: User.
 - Remove client-supplied ownership fields.
 - Create/list projects using the JWT-authenticated user.
-### 4. Enforce private owner access
+### 4. Enforce private owner access ← next
 - Require ownership before accessing a project’s mixes.
 - Require ownership before uploads, deletes, comment reads/creates, and S3 URL generation.
 - Return 403 Forbidden when an authenticated user lacks permission.

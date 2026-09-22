@@ -1,5 +1,6 @@
 package com.mxdwn.api.entity;
 
+import com.mxdwn.api.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +28,9 @@ public class Project {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "artist_id", nullable = false)
-    private String artistId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)

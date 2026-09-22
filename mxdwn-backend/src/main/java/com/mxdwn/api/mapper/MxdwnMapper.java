@@ -26,7 +26,7 @@ public class MxdwnMapper {
         return ProjectResponseDTO.builder()
                 .id(project.getId())
                 .title(project.getTitle())
-                .artistId(project.getArtistId())
+                .ownerId(project.getOwner().getId())
                 .createdAt(project.getCreatedAt())
                 .build();
     }
@@ -62,7 +62,6 @@ public class MxdwnMapper {
     public Project toEntity(ProjectRequestDTO dto) {
         return Project.builder()
                 .title(dto.title())
-                .artistId(dto.artistId())
                 .build();
     }
 

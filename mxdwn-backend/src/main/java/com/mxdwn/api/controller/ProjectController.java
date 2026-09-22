@@ -1,5 +1,6 @@
 package com.mxdwn.api.controller;
 
+import com.mxdwn.api.auth.entity.User;
 import com.mxdwn.api.dto.request.ProjectRequestDTO;
 import com.mxdwn.api.dto.response.ProjectResponseDTO;
 import com.mxdwn.api.entity.Project;
@@ -10,6 +11,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +27,22 @@ public class ProjectController {
     private final S3Service s3Service;
 
     @GetMapping
-    public List<ProjectResponseDTO> getProjectByArtist(@RequestParam String artistId) {
-        return projectRepository.findAllByArtistId(artistId).stream()
+    public List<ProjectResponseDTO> getProjects(
+            @AuthenticationPrincipal User currentUser
+            ) {
+        return projectRepository.findAllByOwner_Id(currentUser.getId()).stream()
                 .map(mxdwnMapper::toDto)
                 .toList();
     }
 
     @PostMapping
-    public ProjectResponseDTO createProject(@Valid @RequestBody ProjectRequestDTO projectRequest) {
+    public ProjectResponseDTO createProject(
+            @AuthenticationPrincipal User currentUser,
+            @Valid @RequestBody ProjectRequestDTO projectRequest
+    ) {
         Project projectToSave = mxdwnMapper.toEntity(projectRequest);
+        projectToSave.setOwner(currentUser);
+
         Project savedProject = projectRepository.save(projectToSave);
         return mxdwnMapper.toDto(savedProject);
     }
